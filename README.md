@@ -22,4 +22,26 @@ OMY의 leader–follower 텔레옵은 Robot PC 안에서 닫힌다.
 - `ROS_DOMAIN_ID=30`
 
 ## 상태
-패키지 `omy_leap_bringup`은 공식 launch가 실패한 것을 확인한 뒤 추가한다 (계획서 Task 13).
+`omy_leap_bringup` 패키지가 들어 있다. 공식 `omy_ai.launch.py`가 그리퍼 제거 상태에서 정상이면 쓰지 않아도 된다.
+
+### 사용법 (Robot PC 컨테이너)
+```bash
+# 이 레포를 clone한 뒤, 컨테이너의 기존 ROBOTIS 워크스페이스를 source 한 상태에서
+colcon build --packages-select omy_leap_bringup
+source install/setup.bash
+ros2 launch omy_leap_bringup omy_ai_no_gripper.launch.py   # follower(그리퍼 mock) + 초기 자세 + leader
+```
+`ros2 pkg prefix open_manipulator_bringup`로 기존 설치 위치를 확인한다.
+
+### 무엇이 다른가
+공식 `omy_f3m.urdf.xacro` 복사본에서 **`OMYF3MEndUnitSystem`(그리퍼)만 `use_mock_hardware="true"`** 로 바꿨다. 팔 시스템은 실제 Dynamixel 그대로다.
+`rh_r1_joint`가 가상 관절로 남아서 `arm_controller` 설정과 leader의 7관절 `/leader/joint_trajectory`를 수정 없이 쓴다.
+
+### 검증 기록 (User PC, 2026-10-09)
+- `xacro` 결과에 `DynamixelHardware` 1개(팔), `mock_components/GenericSystem` 1개(그리퍼). 공식 URDF는 `DynamixelHardware` 2개. `check_urdf` 통과.
+- 팔 하드웨어까지 mock(`use_mock_hardware:=true`)으로 기동: `joint_state_broadcaster`, `arm_controller` 모두 active.
+- leader 형식의 7관절 trajectory를 `/leader/joint_trajectory`로 publish하면 `joint1`, `joint2`, `rh_r1_joint`가 목표값으로 이동.
+
+### 아직 확인되지 않은 것
+- 실제 팔 하드웨어(Dynamixel)로 기동하는 것 (실물 필요)
+- 공식 launch가 그리퍼 제거 상태에서 정말 실패하는지
