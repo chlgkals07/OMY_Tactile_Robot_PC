@@ -22,4 +22,4 @@ OMY의 leader–follower 텔레옵은 Robot PC 안에서 닫힌다.
 - `ROS_DOMAIN_ID=30`
 
 ## 상태
-패키지 `omy_leap_bringup`은 공식 launch가 실패한 것을 확인한 뒤 추가한다 (계획서 Task 11).
+패키지 `omy_leap_bringup`은 공식 launch가 실패한 것을 확인한 뒤 추가한다 (계획서 Task 13).
